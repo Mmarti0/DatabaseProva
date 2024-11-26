@@ -39,7 +39,72 @@ app.post('/inserisci-punteggio', (req, res) => {
     });
   });
   
-  app.listen(PORT, () => {
-    console.log(`Server in esecuzione su http://localhost:${PORT}`);
-  });
-  
+// Prova collegamento con il frontend (Endpoint)
+
+// Servire file statici (frontend)
+app.use(express.static('public'));
+ 
+  // Aggiungere una squadra
+
+app.post('/api/squadre', async (req, res) => {
+  const { teamName, players, notPlaying, penaltyTotal, points } = req.body;
+
+  if (!teamName || !players || players < 6) {
+      return res.status(400).json({ error: 'Dati non validi. Il nome della squadra e almeno 6 giocatori sono richiesti.' });
+  }
+
+  try {
+      // Inserire la logica per salvare la squadra nel database
+      res.status(201).json({ message: 'Squadra aggiunta con successo!' });
+  } catch (error) {
+      res.status(500).json({ error: 'Errore nel salvataggio della squadra.' });
+  }
+});
+
+ // Elimina una squadra 
+
+ app.delete('/api/squadre/:id', async (req, res) => {
+  const teamId = req.params.id;
+
+  try {
+      // Logica per eliminare la squadra dal database
+      res.json({ message: 'Squadra eliminata con successo!' });
+  } catch (error) {
+      res.status(500).json({ error: 'Errore durante l\'eliminazione della squadra.' });
+  }
+});
+
+ //Modificare punti di una squadra 
+
+ app.put('/api/squadre/:id/punti', async (req, res) => {
+  const teamId = req.params.id;
+  const { points } = req.body;
+
+  if (points < 0) {
+      return res.status(400).json({ error: 'I punti non possono essere negativi.' });
+  }
+
+  try {
+      // Logica per aggiornare i punti della squadra nel database
+      res.json({ message: 'Punti aggiornati con successo!' });
+  } catch (error) {
+      res.status(500).json({ error: 'Errore durante l\'aggiornamento dei punti.' });
+  }
+});
+
+ //Ottenere tutte le squadre 
+
+ app.get('/api/squadre', async (req, res) => {
+  try {
+      // Logica per recuperare tutte le squadre dal database
+      res.json({ teams: [] }); // Sostituisci [] con i dati reali
+  } catch (error) {
+      res.status(500).json({ error: 'Errore durante il recupero delle squadre.' });
+  }
+});
+
+
+  // Avvia il server sulla porta 3000
+app.listen(3000, () => {
+  console.log('Server in esecuzione su http://localhost:3000');
+});
