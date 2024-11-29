@@ -1,0 +1,149 @@
+/* Stili di Base */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+/* Form e Input */
+form {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Pulsanti */
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* Tabelle con Stile Avanzato */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Colore di Sfondo per i Titoli della Tabella */
+th {
+    background-color: #5eabbe; /* Colore verde per i titoli */
+    color: white; /* Testo bianco per contrasto */
+}
+
+tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Stile dei Bottoni */
+.deleteBtn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.deleteBtn:hover {
+    background-color: #c82333;
+}
+
+/* Indicatori di Stato */
+.can-play {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.cannot-play {
+    color: red;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Pulsante per Cancellare Tutto */
+#clearAll {
+    background-color: #ffc107;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#clearAll:hover {
+    background-color: #e0a800;
+}
+
+/* Elemento per Mostrare la Penalità Globale */
+#globalPenaltyDisplay {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#changeGlobalPenalty {
+    background-color: #17a2b8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#changeGlobalPenalty:hover {
+    background-color: #138496;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    form, table {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    input[type="text"], input[type="number"], button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}

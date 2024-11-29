@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Squadre Fantavolley</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Gestione Squadre Fantavolley</h1>
+    <form id="teamForm">
+        <label for="teamName">Nome Squadra:</label>
+        <input type="text" id="teamName" required>
+        <label for="players">Numero di Giocatori:</label>
+        <input type="number" id="players" required>
+        <label for="notPlaying">Giocatori che non partecipano:</label>
+        <input type="number" id="notPlaying" required>
+        <button type="submit">Aggiungi Squadra</button>
+    </form>
+
+    <!-- Bottone e visualizzazione penalità globale -->
+    <button id="changeGlobalPenalty">Modifica Penalità Globale</button>
+    <p id="globalPenaltyDisplay">Penalità Globale per Giocatore: <span id="globalPenaltyValue">0</span></p>
+
+    <table id="teamsList">
+        <thead>
+            <tr>
+                <th>Nome Squadra</th>
+                <th>Giocatori Totali</th>
+                <th>Giocatori Assenti</th>
+                <th>Penalità Totale</th>
+                <th>Idoneo</th>
+                <th>Punti</th>
+                <th>Punteggio finale</th>
+                <th>Elimina</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Le squadre verranno aggiunte qui dinamicamente -->
+        </tbody>
+    </table>
+
+    <div>
+        <button id="calculateWinner">Calcola Vincitore</button>
+        <button id="resetWinner">Resetta Calcolo</button>
+    </div>
+    <p id="winnerMessage"></p>
+
+    <button id="clearAll">Cancella Tutte le Squadre</button>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
