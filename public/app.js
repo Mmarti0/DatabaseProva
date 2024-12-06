@@ -1,92 +1,3 @@
-// Caricare squadre dal database 
-async function loadTeams() {
-    try {
-        const response = await fetch('/api/squadre');
-        if (!response.ok) throw new Error('Errore nel recupero delle squadre.');
-        const { teams } = await response.json();
-
-        const teamsList = document.getElementById('teamsList').querySelector('tbody');
-        teamsList.innerHTML = ''; // Pulisce la lista esistente
-
-        teams.forEach((team) => {
-            const row = document.createElement('tr');
-            const canPlay = (team.players - team.notPlaying) >= 6;
-            const playStatus = canPlay 
-                ? '<span class="can-play">✅</span>' 
-                : '<span class="cannot-play">❌</span>';
-
-            const finalPoints = team.points !== null ? team.points - team.penaltyTotal : 'N/A';
-
-            row.innerHTML = `
-                <td>${team.teamName}</td>
-                <td>${team.players}</td>
-                <td>${team.notPlaying}</td>
-                <td>${team.penaltyTotal}</td>
-                <td>${playStatus}</td>
-                <td>${team.points !== null ? team.points : 'N/A'}</td>
-                <td>${canPlay ? finalPoints : 'N/A'}</td>
-                <td><button class="deleteBtn" data-id="${team.id}">Elimina</button></td>
-            `;
-            teamsList.appendChild(row);
-        });
-    } catch (error) {
-        console.error(error);
-        alert('Errore nel caricamento delle squadre.');
-    }
-}
-
-// Aggiungi una squadra al database 
-document.getElementById('teamForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const teamName = document.getElementById('teamName').value.trim();
-    const players = parseInt(document.getElementById('players').value);
-    const notPlaying = parseInt(document.getElementById('notPlaying').value);
-    const penaltyTotal = notPlaying * globalPenaltyPerPlayer;
-
-    if (players < 6) {
-        alert('Il numero totale di giocatori deve essere almeno 6.');
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/squadre', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamName, players, notPlaying, penaltyTotal, points: null }),
-        });
-
-        if (!response.ok) throw new Error('Errore nel salvataggio della squadra.');
-
-        alert('Squadra aggiunta con successo!');
-        this.reset();
-        loadTeams();
-    } catch (error) {
-        console.error(error);
-        alert('Errore nell\'aggiunta della squadra.');
-    }
-});
-
-// Elimina una squadra dal database 
-document.getElementById('teamsList').addEventListener('click', async function(e) {
-    if (e.target.classList.contains('deleteBtn')) {
-        const id = e.target.dataset.id;
-
-        try {
-            const response = await fetch(`/api/squadre/${id}`, { method: 'DELETE' });
-            if (!response.ok) throw new Error('Errore nella cancellazione della squadra.');
-
-            alert('Squadra eliminata con successo!');
-            loadTeams();
-        } catch (error) {
-            console.error(error);
-            alert('Errore nella cancellazione della squadra.');
-        }
-    }
-});
-
-// Codice del frontend 
-
 // Variabile globale per la penalità per giocatore
 let globalPenaltyPerPlayer = 0;
 
@@ -107,14 +18,113 @@ document.getElementById('changeGlobalPenalty').addEventListener('click', functio
 
     globalPenaltyPerPlayer = parsedPenalty;
     updateGlobalPenaltyDisplay();
+    loadTeams();
+});
+
+// Funzione per caricare le squadre
+function loadTeams() {
+    const teams = JSON.parse(localStorage.getItem('teams')) || [];
+    const teamsList = document.getElementById('teamsList').querySelector('tbody');
+    teamsList.innerHTML = ''; // Pulisce la lista esistente
+
+    teams.forEach((team, index) => {
+        const row = document.createElement('tr');
+
+        // Calcola se la squadra può giocare
+        const canPlay = (team.players - team.notPlaying) >= 6;
+        const playStatus = canPlay 
+            ? '<span class="can-play">✅</span>' // Spunta verde per squadra che può giocare
+            : '<span class="cannot-play">❌</span>'; // Crocetta rossa per squadra che non può giocare
+
+        // Calcolo del punteggio finale
+        const finalPoints = team.points !== null ? team.points - team.penaltyTotal : 'N/A';
+
+        // Aggiungi la riga con il bottone "Inserisci i Punti" solo se la squadra è idonea
+        row.innerHTML = `
+            <td>${team.teamName}</td>
+            <td>${team.players}</td>
+            <td>${team.notPlaying}</td>
+            <td>${team.penaltyTotal}</td>
+            <td>${playStatus}</td>
+            <td>${team.points !== null ? team.points : 'N/A'}</td>
+            <td>${canPlay ? finalPoints : 'N/A'}</td>
+            <td>
+                ${canPlay && team.points === null ? 
+                    `<button class="enterPointsBtn" data-index="${index}">Inserisci Punti</button>` 
+                    : ''}
+                <button class="deleteBtn" data-index="${index}">Elimina</button>
+            </td>
+        `;
+
+        teamsList.appendChild(row);
+    });
+
+    // Aggiungi l'evento per il bottone "Inserisci Punti"
+    const enterPointsButtons = document.querySelectorAll('.enterPointsBtn');
+    enterPointsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = this.dataset.index;
+            const teams = JSON.parse(localStorage.getItem('teams')) || [];
+            const team = teams[index];
+
+            let points = prompt(`Inserisci i punti per la squadra ${team.teamName}:`);
+            points = parseInt(points);
+
+            if (isNaN(points) || points < 0) {
+                alert('I punti devono essere un numero valido maggiore o uguale a 0.');
+                return;
+            }
+
+            team.points = points;
+            localStorage.setItem('teams', JSON.stringify(teams));
+            loadTeams();
+        });
+    });
+}
+
+// Funzione per aggiungere una squadra
+document.getElementById('teamForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const teamName = document.getElementById('teamName').value.trim();
+    let players = parseInt(document.getElementById('players').value);
+    let notPlaying = parseInt(document.getElementById('notPlaying').value);
+    const penaltyTotal = notPlaying * globalPenaltyPerPlayer;
+
+    if (players < 6) {
+        alert('Il numero totale di giocatori deve essere almeno 6.');
+        return;
+    }
 
     const teams = JSON.parse(localStorage.getItem('teams')) || [];
-    teams.forEach(team => {
-        team.penaltyTotal = team.notPlaying * globalPenaltyPerPlayer;
+    const teamExists = teams.some(team => team.teamName.toLowerCase() === teamName.toLowerCase());
+    
+    if (teamExists) {
+        alert('Questa squadra esiste già.');
+        return;
+    }
+
+    teams.push({
+        teamName,
+        players,
+        notPlaying,
+        penaltyTotal,
+        points: null
     });
 
     localStorage.setItem('teams', JSON.stringify(teams));
     loadTeams();
+});
+
+// Funzione per eliminare una squadra
+document.getElementById('teamsList').addEventListener('click', function(e) {
+    if (e.target.classList.contains('deleteBtn')) {
+        const index = e.target.dataset.index;
+        const teams = JSON.parse(localStorage.getItem('teams')) || [];
+        teams.splice(index, 1);
+        localStorage.setItem('teams', JSON.stringify(teams));
+        loadTeams();
+    }
 });
 
 // Funzione per calcolare il vincitore
@@ -135,5 +145,11 @@ document.getElementById('calculateWinner').addEventListener('click', function() 
     alert(`La squadra vincitrice è: ${bestTeam.team.teamName}`);
 });
 
-// Carica le squadre all'inizio
+// Funzione per cancellare tutte le squadre
+document.getElementById('clearAll').addEventListener('click', function() {
+    localStorage.setItem('teams', JSON.stringify([]));
+    loadTeams();
+});
+
+// Carica le squadre all'avvio
 loadTeams();
