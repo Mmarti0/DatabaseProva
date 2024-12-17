@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -22,6 +23,10 @@ db.run(`CREATE TABLE IF NOT EXISTS squadre (
     penaltyTotal INTEGER,
     points INTEGER
 )`);
+
+app.get('/', (req, res) => {
+    res.send('Server in esecuzione correttamente!');
+});
 
 app.get('/api/squadre', (req, res) => {
     db.all('SELECT * FROM squadre', [], (err, rows) => {
