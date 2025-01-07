@@ -1,8 +1,15 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+const sqlite3 = require('sqlite3');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
+// Serve i file statici dalla cartella 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rotta per la pagina principale che servirà il file index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,9 +31,7 @@ db.run(`CREATE TABLE IF NOT EXISTS squadre (
     points INTEGER
 )`);
 
-app.get('/', (req, res) => {
-    res.send('Server in esecuzione correttamente!');
-});
+
 
 app.get('/api/squadre', (req, res) => {
     db.all('SELECT * FROM squadre', [], (err, rows) => {
